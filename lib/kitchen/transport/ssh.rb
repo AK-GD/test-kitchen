@@ -135,10 +135,12 @@ module Kitchen
 
         # (see Base::Connection#login_command)
         def login_command
-          args  = %w{ -o UserKnownHostsFile=/dev/null }
-          args += %w{ -o StrictHostKeyChecking=no }
-          args += %w{ -o IdentitiesOnly=yes } if options[:keys]
           args += %W{ -o LogLevel=#{logger.debug? ? 'VERBOSE' : 'ERROR'} }
+          if !options.key?(:hostkeycheck)
+            args += %W[ -o UserKnownHostsFile=/dev/null ]
+            args += %W[ -o StrictHostKeyChecking=no ]
+            args += %W[ -o IdentitiesOnly=yes ] if options[:keys]
+          end
           if options.key?(:forward_agent)
             args += %W{ -o ForwardAgent=#{options[:forward_agent] ? 'yes' : 'no'} }
           end
